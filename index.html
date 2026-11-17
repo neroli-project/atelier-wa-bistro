@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atelier Wa-Bistro | フレンチ和惣菜＆アストロ・キッチン発想帳</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600;700&display=swap');
+    
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    .font-serif-jp {
+      font-family: 'Shippori Mincho', serif;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="min-h-screen transition-colors duration-500 bg-stone-50 text-stone-800" id="app-body">
+
+  <!-- ヘッダー -->
+  <header id="app-header" class="sticky top-0 z-20 backdrop-blur-md border-b transition-colors duration-500 bg-white/85 border-stone-200">
+    <div class="max-w-6xl mx-auto px-4 py-3.5 flex flex-col md:flex-row items-center justify-between gap-4">
+      
+      <!-- ロゴ・タイトル -->
+      <div class="flex items-center justify-between w-full md:w-auto">
+        <div class="flex items-center gap-3">
+          <div id="logo-badge" class="p-2.5 rounded-xl shadow-sm bg-gradient-to-br from-amber-700 to-stone-800 text-amber-50 transition-all duration-500">
+            <i data-lucide="chef-hat" id="logo-icon" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight font-serif-jp">
+              Atelier Wa-Bistro <span class="text-xs font-sans font-normal opacity-75 ml-1">レシピ発想帳</span>
+            </h1>
+            <p id="header-subtitle" class="text-xs text-stone-500 transition-colors">
+              フランス料理 × 和惣菜 × 星とタロットのキッチンラボ
+            </p>
+          </div>
+        </div>
+
+        <!-- APIキー設定ボタン（モバイル表示用） -->
+        <button onclick="toggleApiModal()" id="api-btn-mobile" class="md:hidden p-2 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100 flex items-center gap-1 text-xs">
+          <i data-lucide="key" class="w-4 h-4"></i>
+          <span>API設定</span>
+        </button>
+      </div>
+
+      <!-- タブ切り替え & APIキー設定 -->
+      <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+        <div id="tab-container" class="flex p-1 rounded-xl border bg-stone-100 border-stone-200 transition-colors w-full sm:w-auto">
+          <button
+            onclick="switchTab('standard')"
+            id="tab-standard"
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-stone-900 shadow-sm"
+          >
+            <i data-lucide="utensils" class="w-4 h-4 text-amber-700"></i>
+            <span>スタンダード和仏惣菜</span>
+          </button>
+          <button
+            onclick="switchTab('astro')"
+            id="tab-astro"
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-stone-500 hover:text-stone-800"
+          >
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+            <span>タロット＆占星術</span>
+          </button>
+        </div>
+
+        <!-- APIキー設定ボタン（PC表示用） -->
+        <button onclick="toggleApiModal()" id="api-btn-desktop" class="hidden md:flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 text-xs font-medium shadow-sm transition-colors">
+          <i data-lucide="key" class="w-4 h-4 text-amber-600"></i>
+          <span id="api-status-text">APIキー設定</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="max-w-6xl mx-auto px-4 py-6 sm:py-8 space-y-8">
+    
+    <!-- 入力＆履歴パネル -->
+    <section id="input-panel" class="rounded-2xl p-5 sm:p-7 border shadow-sm transition-colors duration-500 bg-white border-stone-200">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+        
+        <!-- 左側：材料の入力と履歴 -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-bold flex items-center gap-2">
+              <span id="dot-ingredient" class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
+              家にある材料・買った食材
+            </label>
+            <button 
+              onclick="clearSelectedIngredients()"
+              id="clear-ing-btn"
+              class="text-xs opacity-60 hover:opacity-100 flex items-center gap-1 hidden"
+            >
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> クリア
+            </button>
+          </div>
+
+          <!-- 選択中の材料タグエリア -->
+          <div id="selected-ingredients-box" class="min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-stone-50 border-stone-200 transition-colors">
+            <!-- JSで描画 -->
+          </div>
+
+          <!-- 新規材料のテキスト入力 -->
+          <form onsubmit="handleAddIngredient(event)" class="flex gap-2">
+            <input
+              type="text"
+              id="ingredient-input"
+              placeholder="例：里芋、鴨肉、春菊、クリームチーズ..."
+              class="flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-amber-600 transition-colors"
+            />
+            <button
+              type="submit"
+              id="add-ing-btn"
+              class="px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i> 追加
+            </button>
+          </form>
+
+          <!-- ポンポン押せる材料履歴 -->
+          <div class="pt-1">
+            <p class="text-xs opacity-70 mb-2 flex items-center gap-1">
+              <i data-lucide="history" class="w-3.5 h-3.5"></i> 材料履歴（ポンポン押して追加）
+            </p>
+            <div id="ingredient-history-box" class="flex flex-wrap gap-1.5">
+              <!-- JSで描画 -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 右側：調理名・料理名の入力と履歴 -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <label class="text-sm font-bold flex items-center gap-2">
+              <span id="dot-method" class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+              調理名・作りたい料理のイメージ（任意）
+            </label>
+            <button 
+              onclick="clearSelectedMethods()"
+              id="clear-method-btn"
+              class="text-xs opacity-60 hover:opacity-100 flex items-center gap-1 hidden"
+            >
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> クリア
+            </button>
+          </div>
+
+          <!-- 選択中の調理法タグエリア -->
+          <div id="selected-methods-box" class="min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-stone-50 border-stone-200 transition-colors">
+            <!-- JSで描画 -->
+          </div>
+
+          <!-- 新規調理法のテキスト入力 -->
+          <form onsubmit="handleAddMethod(event)" class="flex gap-2">
+            <input
+              type="text"
+              id="method-input"
+              placeholder="例：リエット、キッシュ、南蛮漬け、白和え..."
+              class="flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-emerald-600 transition-colors"
+            />
+            <button
+              type="submit"
+              id="add-method-btn"
+              class="px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i> 追加
+            </button>
+          </form>
+
+          <!-- ポンポン押せる調理法履歴 -->
+          <div class="pt-1">
+            <p class="text-xs opacity-70 mb-2 flex items-center gap-1">
+              <i data-lucide="history" class="w-3.5 h-3.5"></i> 調理名・料理履歴（ポンポン押して追加）
+            </p>
+            <div id="method-history-box" class="flex flex-wrap gap-1.5">
+              <!-- JSで描画 -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- エラー表示エリア -->
+      <div id="error-box" class="hidden mt-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-600 text-sm flex items-center gap-2">
+        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+        <span id="error-text"></span>
+      </div>
+
+      <!-- 生成ボタンエリア -->
+      <div class="mt-6 pt-5 border-t border-current/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p id="mode-description" class="text-xs opacity-75 text-center sm:text-left">
+          🇫🇷🇯🇵 フレンチの技法と和の調味料が織りなす、お惣菜向けレシピを10個提案します
+        </p>
+        <button
+          onclick="generateRecipes()"
+          id="generate-btn"
+          class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2.5 bg-gradient-to-r from-amber-700 to-stone-800 hover:from-amber-600 hover:to-stone-700 text-white shadow-stone-300"
+        >
+          <i data-lucide="book-open" class="w-5 h-5"></i>
+          <span>レシピを10個発想する</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- レシピ結果表示エリア -->
+    <section id="results-section" class="hidden space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold flex items-center gap-2 font-serif-jp">
+          <i data-lucide="utensils" id="results-icon" class="w-5 h-5 text-amber-700"></i>
+          <span>提案された10のレシピ</span>
+        </h2>
+        <span class="text-xs opacity-70">右上のボタンでレシピをコピーできます</span>
+      </div>
+
+      <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- JSでカードを描画 -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- APIキー設定モーダル -->
+  <div id="api-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white text-stone-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-fadeIn">
+      <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-lg flex items-center gap-2">
+          <i data-lucide="key" class="w-5 h-5 text-amber-600"></i>
+          Google Gemini APIキー設定
+        </h3>
+        <button onclick="toggleApiModal()" class="p-1 rounded-lg hover:bg-stone-100 text-stone-500">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <p class="text-xs text-stone-600 leading-relaxed">
+        Google AI Studioで取得したご自身のAPIキーを入力して保存してください。キーはお使いのブラウザ内（localStorage）にのみ安全に保存されます。
+      </p>
+
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-stone-700">Gemini API Key</label>
+        <input 
+          type="password" 
+          id="api-key-input" 
+          placeholder="AIzaSy..." 
+          class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-amber-600"
+        />
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="toggleApiModal()" class="px-4 py-2 rounded-xl text-sm text-stone-600 hover:bg-stone-100">
+          キャンセル
+        </button>
+        <button onclick="saveApiKey()" class="px-5 py-2 rounded-xl text-sm font-bold bg-amber-700 hover:bg-amber-600 text-white shadow-sm">
+          保存する
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 初期データ
+    const DEFAULT_INGREDIENTS = ['鶏もも肉', '大根', '白味噌', '生クリーム', '柚子', 'きのこ', 'サーモン', '醤油', 'バター', 'いちじく', '生ハム', '豆腐'];
+    const DEFAULT_METHODS = ['テリーヌ', 'コンフィ', 'ポワレ', 'マリネ', 'グラタン', '煮込み', 'タルト', 'フリット', 'ムース'];
+
+    // アプリ状態
+    let activeTab = 'standard'; // 'standard' | 'astro'
+    let selectedIngredients = ['鶏もも肉', '白味噌', 'きのこ'];
+    let selectedMethods = ['テリーヌ'];
+    let ingredientHistory = JSON.parse(localStorage.getItem('wb_ing_history')) || [...DEFAULT_INGREDIENTS];
+    let methodHistory = JSON.parse(localStorage.getItem('wb_method_history')) || [...DEFAULT_METHODS];
+    let generatedRecipes = [];
+    let isLoading = false;
+
+    // 初期化処理
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedKey = localStorage.getItem('wb_gemini_api_key');
+      if (savedKey) {
+        document.getElementById('api-key-input').value = savedKey;
+        updateApiStatusUI(true);
+      }
+      renderAllTags();
+      lucide.createIcons();
+    });
+
+    // APIキー設定モーダルの開閉
+    function toggleApiModal() {
+      const modal = document.getElementById('api-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    // APIキーの保存
+    function saveApiKey() {
+      const key = document.getElementById('api-key-input').value.trim();
+      if (key) {
+        localStorage.setItem('wb_gemini_api_key', key);
+        updateApiStatusUI(true);
+      } else {
+        localStorage.removeItem('wb_gemini_api_key');
+        updateApiStatusUI(false);
+      }
+      toggleApiModal();
+    }
+
+    function updateApiStatusUI(hasKey) {
+      const statusText = document.getElementById('api-status-text');
+      if (statusText) {
+        statusText.textContent = hasKey ? 'APIキー設定済 ✓' : 'APIキー設定';
+      }
+    }
+
+    // タブ切り替えとテーマ変更
+    function switchTab(tab) {
+      activeTab = tab;
+      const isAstro = tab === 'astro';
+
+      // ボディ・ヘッダーのテーマ更新
+      const body = document.getElementById('app-body');
+      const header = document.getElementById('app-header');
+      const logoBadge = document.getElementById('logo-badge');
+      const headerSub = document.getElementById('header-subtitle');
+      const tabContainer = document.getElementById('tab-container');
+      const tabStd = document.getElementById('tab-standard');
+      const tabAst = document.getElementById('tab-astro');
+      const inputPanel = document.getElementById('input-panel');
+      const modeDesc = document.getElementById('mode-description');
+      const genBtn = document.getElementById('generate-btn');
+
+      if (isAstro) {
+        body.className = 'min-h-screen transition-colors duration-500 bg-slate-950 text-slate-100';
+        header.className = 'sticky top-0 z-20 backdrop-blur-md border-b transition-colors duration-500 bg-slate-900/85 border-indigo-900/60';
+        logoBadge.className = 'p-2.5 rounded-xl shadow-sm bg-gradient-to-br from-indigo-600 to-purple-700 text-amber-200 transition-all duration-500';
+        headerSub.className = 'text-xs text-indigo-300 transition-colors';
+        tabContainer.className = 'flex p-1 rounded-xl border bg-slate-950 border-indigo-800/60 transition-colors w-full sm:w-auto';
+        
+        tabStd.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200';
+        tabAst.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-gradient-to-r from-indigo-600 to-purple-700 text-amber-100 shadow-md';
+        
+        inputPanel.className = 'rounded-2xl p-5 sm:p-7 border shadow-sm transition-colors duration-500 bg-slate-900/70 border-indigo-800/50 shadow-indigo-950/50';
+        modeDesc.textContent = '✨ タロットのアルカナや天体の配置（アスペクト）からインスピレーションを得た10皿を紡ぎます';
+        genBtn.className = 'w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2.5 bg-gradient-to-r from-indigo-500 via-purple-600 to-amber-600 hover:from-indigo-400 hover:to-amber-500 text-white shadow-purple-900/40';
+      } else {
+        body.className = 'min-h-screen transition-colors duration-500 bg-stone-50 text-stone-800';
+        header.className = 'sticky top-0 z-20 backdrop-blur-md border-b transition-colors duration-500 bg-white/85 border-stone-200';
+        logoBadge.className = 'p-2.5 rounded-xl shadow-sm bg-gradient-to-br from-amber-700 to-stone-800 text-amber-50 transition-all duration-500';
+        headerSub.className = 'text-xs text-stone-500 transition-colors';
+        tabContainer.className = 'flex p-1 rounded-xl border bg-stone-100 border-stone-200 transition-colors w-full sm:w-auto';
+        
+        tabStd.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-stone-900 shadow-sm';
+        tabAst.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-stone-500 hover:text-stone-800';
+        
+        inputPanel.className = 'rounded-2xl p-5 sm:p-7 border shadow-sm transition-colors duration-500 bg-white border-stone-200';
+        modeDesc.textContent = '🇫🇷🇯🇵 フレンチの技法と和の調味料が織りなす、お惣菜向けレシピを10個提案します';
+        genBtn.className = 'w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm sm:text-base shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2.5 bg-gradient-to-r from-amber-700 to-stone-800 hover:from-amber-600 hover:to-stone-700 text-white shadow-stone-300';
+      }
+
+      // 入力ボックスのスタイル更新
+      updateInputStyles();
+      renderAllTags();
+      if (generatedRecipes.length > 0) {
+        renderRecipes();
+      }
+      lucide.createIcons();
+    }
+
+    function updateInputStyles() {
+      const isAstro = activeTab === 'astro';
+      const ingBox = document.getElementById('selected-ingredients-box');
+      const metBox = document.getElementById('selected-methods-box');
+      const ingInp = document.getElementById('ingredient-input');
+      const metInp = document.getElementById('method-input');
+      const addIngBtn = document.getElementById('add-ing-btn');
+      const addMetBtn = document.getElementById('add-method-btn');
+
+      if (isAstro) {
+        ingBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-slate-950/80 border-indigo-800/60 transition-colors';
+        metBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-slate-950/80 border-indigo-800/60 transition-colors';
+        ingInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-slate-950 border-indigo-800 text-white placeholder-slate-500 focus:ring-indigo-500 transition-colors';
+        metInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-slate-950 border-indigo-800 text-white placeholder-slate-500 focus:ring-purple-500 transition-colors';
+        addIngBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-indigo-600 hover:bg-indigo-500 text-white shrink-0';
+        addMetBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-purple-600 hover:bg-purple-500 text-white shrink-0';
+      } else {
+        ingBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-stone-50 border-stone-200 transition-colors';
+        metBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-stone-50 border-stone-200 transition-colors';
+        ingInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-amber-600 transition-colors';
+        metInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-emerald-600 transition-colors';
+        addIngBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0';
+        addMetBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0';
+      }
+    }
+
+    // 履歴の保存
+    function saveHistories() {
+      localStorage.setItem('wb_ing_history', JSON.stringify(ingredientHistory));
+      localStorage.setItem('wb_method_history', JSON.stringify(methodHistory));
+    }
+
+    // 材料の追加・削除
+    function handleAddIngredient(e) {
+      e.preventDefault();
+      const input = document.getElementById('ingredient-input');
+      addIngredient(input.value);
+      input.value = '';
+    }
+
+    function addIngredient(item) {
+      const trimmed = item.trim();
+      if (!trimmed) return;
+      if (!selectedIngredients.includes(trimmed)) {
+        selectedIngredients.push(trimmed);
+      }
+      if (!ingredientHistory.includes(trimmed)) {
+        ingredientHistory.unshift(trimmed);
+        saveHistories();
+      }
+      renderAllTags();
+    }
+
+    function removeSelectedIngredient(item) {
+      selectedIngredients = selectedIngredients.filter(i => i !== item);
+      renderAllTags();
+    }
+
+    function clearSelectedIngredients() {
+      selectedIngredients = [];
+      renderAllTags();
+    }
+
+    function removeHistoryIngredient(e, item) {
+      e.stopPropagation();
+      ingredientHistory = ingredientHistory.filter(i => i !== item);
+      saveHistories();
+      renderAllTags();
+    }
+
+    // 調理法の追加・削除
+    function handleAddMethod(e) {
+      e.preventDefault();
+      const input = document.getElementById('method-input');
+      addMethod(input.value);
+      input.value = '';
+    }
+
+    function addMethod(item) {
+      const trimmed = item.trim();
+      if (!trimmed) return;
+      if (!selectedMethods.includes(trimmed)) {
+        selectedMethods.push(trimmed);
+      }
+      if (!methodHistory.includes(trimmed)) {
+        methodHistory.unshift(trimmed);
+        saveHistories();
+      }
+      renderAllTags();
+    }
+
+    function removeSelectedMethod(item) {
+      selectedMethods = selectedMethods.filter(m => m !== item);
+      renderAllTags();
+    }
+
+    function clearSelectedMethods() {
+      selectedMethods = [];
+      renderAllTags();
+    }
+
+    function removeHistoryMethod(e, item) {
+      e.stopPropagation();
+      methodHistory = methodHistory.filter(m => m !== item);
+      saveHistories();
+      renderAllTags();
+    }
+
+    // タグと履歴ボタンの描画
+    function renderAllTags() {
+      const isAstro = activeTab === 'astro';
+
+      // クリアボタンの表示制御
+      document.getElementById('clear-ing-btn').classList.toggle('hidden', selectedIngredients.length === 0);
+      document.getElementById('clear-method-btn').classList.toggle('hidden', selectedMethods.length === 0);
+
+      // 選択中の材料
+      const selIngBox = document.getElementById('selected-ingredients-box');
+      if (selectedIngredients.length === 0) {
+        selIngBox.innerHTML = `<span class="text-xs opacity-50 px-1">下の履歴からポンポン押すか、入力して追加してください</span>`;
+      } else {
+        selIngBox.innerHTML = selectedIngredients.map(item => `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium animate-fadeIn ${
+            isAstro 
+              ? 'bg-indigo-600/40 text-amber-200 border border-indigo-500/50' 
+              : 'bg-amber-100 text-amber-900 border border-amber-200'
+          }">
+            ${escapeHtml(item)}
+            <button onclick="removeSelectedIngredient('${escapeAttr(item)}')" class="hover:bg-black/10 rounded-full p-0.5">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </span>
+        `).join('');
+      }
+
+      // 材料履歴
+      const histIngBox = document.getElementById('ingredient-history-box');
+      histIngBox.innerHTML = ingredientHistory.map(item => {
+        const isSel = selectedIngredients.includes(item);
+        const btnClass = isSel
+          ? (isAstro ? 'bg-amber-500/20 border-amber-400/50 text-amber-200 font-semibold' : 'bg-amber-700 text-white border-amber-700 font-semibold')
+          : (isAstro ? 'bg-slate-800/80 border-slate-700 text-slate-300 hover:border-indigo-500' : 'bg-stone-100 border-stone-200 text-stone-700 hover:bg-stone-200');
+        
+        return `
+          <button type="button" onclick="${isSel ? `removeSelectedIngredient('${escapeAttr(item)}')` : `addIngredient('${escapeAttr(item)}')`}"
+            class="group inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs border transition-all ${btnClass}">
+            <span>${isSel ? '✓' : '+'} ${escapeHtml(item)}</span>
+            <span onclick="removeHistoryIngredient(event, '${escapeAttr(item)}')" class="opacity-0 group-hover:opacity-60 hover:!opacity-100 ml-0.5 px-0.5 rounded" title="履歴から削除">×</span>
+          </button>
+        `;
+      }).join('');
+
+      // 選択中の調理法
+      const selMetBox = document.getElementById('selected-methods-box');
+      if (selectedMethods.length === 0) {
+        selMetBox.innerHTML = `<span class="text-xs opacity-50 px-1">例：テリーヌ、コンフィ、お浸し、タルトなど（空欄でもOK）</span>`;
+      } else {
+        selMetBox.innerHTML = selectedMethods.map(item => `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium animate-fadeIn ${
+            isAstro 
+              ? 'bg-purple-600/40 text-purple-200 border border-purple-500/50' 
+              : 'bg-emerald-100 text-emerald-900 border border-emerald-200'
+          }">
+            ${escapeHtml(item)}
+            <button onclick="removeSelectedMethod('${escapeAttr(item)}')" class="hover:bg-black/10 rounded-full p-0.5">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </span>
+        `).join('');
+      }
+
+      // 調理法履歴
+      const histMetBox = document.getElementById('method-history-box');
+      histMetBox.innerHTML = methodHistory.map(item => {
+        const isSel = selectedMethods.includes(item);
+        const btnClass = isSel
+          ? (isAstro ? 'bg-purple-500/30 border-purple-400/50 text-purple-200 font-semibold' : 'bg-emerald-700 text-white border-emerald-700 font-semibold')
+          : (isAstro ? 'bg-slate-800/80 border-slate-700 text-slate-300 hover:border-purple-500' : 'bg-stone-100 border-stone-200 text-stone-700 hover:bg-stone-200');
+        
+        return `
+          <button type="button" onclick="${isSel ? `removeSelectedMethod('${escapeAttr(item)}')` : `addMethod('${escapeAttr(item)}')`}"
+            class="group inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs border transition-all ${btnClass}">
+            <span>${isSel ? '✓' : '+'} ${escapeHtml(item)}</span>
+            <span onclick="removeHistoryMethod(event, '${escapeAttr(item)}')" class="opacity-0 group-hover:opacity-60 hover:!opacity-100 ml-0.5 px-0.5 rounded" title="履歴から削除">×</span>
+          </button>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // エラー表示制御
+    function showError(msg) {
+      const box = document.getElementById('error-box');
+      const text = document.getElementById('error-text');
+      if (msg) {
+        text.textContent = msg;
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+      }
+    }
+
+    // レシピ生成（Gemini API呼び出し）
+    async function generateRecipes() {
+      if (isLoading) return;
+      
+      const apiKey = localStorage.getItem('wb_gemini_api_key');
+      if (!apiKey) {
+        showError('右上の「APIキー設定」ボタンから、Google Gemini APIキーを入力して保存してください！');
+        toggleApiModal();
+        return;
+      }
+
+      if (selectedIngredients.length === 0 && selectedMethods.length === 0) {
+        showError('材料か調理名・料理名を1つ以上入れてくださいね！');
+        return;
+      }
+
+      showError('');
+      isLoading = true;
+      const genBtn = document.getElementById('generate-btn');
+      const isAstro = activeTab === 'astro';
+      
+      genBtn.disabled = true;
+      genBtn.innerHTML = `
+        <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
+        <span>${isAstro ? '星とカードからレシピをリーディング中...' : '10品のフレンチ和惣菜を考案中...'}</span>
+      `;
+      lucide.createIcons();
+
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      const systemPrompt = isAstro
+        ? `あなたはフランス料理と和風のお惣菜を融合させたデリカテッセンのオーナーシェフであり、同時に熟練のタロット占い師・占星術師でもあります。
+ユーザーから与えられた「材料」や「調理名・料理名」をベースに、タロットカード（大アルカナ・小アルカナ）、12星座、惑星（太陽、月、金星、木星など）、アスペクト（コンジャンクション、トライン、オポジションなど）の要素や象徴を巧みに取り入れた、美しく神秘的で美味しい「フレンチ和惣菜」のレシピアイデアを【必ず10個】提案してください。
+ネーミングは「愚者のタルト」「生ハムとフルーツのコンジャンクション」「月と白味噌のポタージュ」「女帝の無花果テリーヌ」のように、占い好きやお客様がワクワクする詩的で魅力的なものにしてください。`
+        : `あなたは将来「フランス料理と和風を合わせたお惣菜（フレンチ和惣菜）のお店」を開くために研究中の情熱的な料理人です。
+ユーザーから与えられた「材料」や「調理名・料理名」をベースに、家庭でも作れて、かつお惣菜屋さんのショーケースに並んだら思わず買いたくなるような、おしゃれで美味しい「フレンチ×和風」の創作お惣菜レシピを【必ず10個】提案してください。
+出汁、味噌、醤油、柚子、みりんなどの和の要素と、バター、生クリーム、ハーブ、ワイン、フレンチの調理技法（コンフィ、テリーヌ、マリネ、ポワレ、デグラセ、セジール、スエなど）をバランスよく組み合わせてください。`;
+
+      const userQuery = `
+【使いたい材料】: ${selectedIngredients.length > 0 ? selectedIngredients.join('、') : 'おまかせ（季節の食材など）'}
+【希望の調理名・料理名・スタイル】: ${selectedMethods.length > 0 ? selectedMethods.join('、') : 'おまかせ（フレンチ和惣菜風）'}
+
+上記の条件を活かして、バリエーション豊かな10個のレシピを提案してください。すべての材料を1つの料理に無理に詰め込む必要はなく、組み合わせを変えながら10通りの魅力的なアイデアを出してください。`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        systemInstruction: {
+          parts: [{ text: systemPrompt }]
+        },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: "ARRAY",
+            description: "10個のレシピ提案リスト",
+            items: {
+              type: "OBJECT",
+              properties: {
+                title: { type: "STRING", description: "魅力的で美味しそうなレシピ名" },
+                mysticNote: { 
+                  type: "STRING", 
+                  description: isAstro 
+                    ? "モチーフにしたタロットカードや天体・アスペクトの名前と、料理への意味づけ" 
+                    : "このお惣菜のコンセプトや和仏マリアージュのポイント"
+                },
+                ingredients: {
+                  type: "ARRAY",
+                  items: { type: "STRING" },
+                  description: "主な材料のリスト"
+                },
+                steps: { type: "STRING", description: "簡潔で分かりやすい作り方の手順" },
+                chefTip: { type: "STRING", description: "お惣菜として美味しく仕上げるコツや盛り付けのヒント" }
+              },
+              required: ["title", "mysticNote", "ingredients", "steps", "chefTip"]
+            }
+          }
+        }
+      };
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`APIエラー (${response.status}): APIキーが正しいか確認してください。`);
+        }
+
+        const result = await response.json();
+        const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (jsonText) {
+          generatedRecipes = JSON.parse(jsonText);
+          renderRecipes();
+        } else {
+          throw new Error('レシピデータの取得に失敗しました。');
+        }
+      } catch (err) {
+        showError(err.message || 'レシピの生成中にエラーが起きました。');
+        console.error(err);
+      } finally {
+        isLoading = false;
+        genBtn.disabled = false;
+        genBtn.innerHTML = `
+          <i data-lucide="${isAstro ? 'sparkles' : 'book-open'}" class="w-5 h-5"></i>
+          <span>レシピを10個発想する</span>
+        `;
+        lucide.createIcons();
+      }
+    }
+
+    // レシピカードの描画
+    function renderRecipes() {
+      const section = document.getElementById('results-section');
+      const grid = document.getElementById('recipes-grid');
+      const isAstro = activeTab === 'astro';
+
+      section.classList.remove('hidden');
+
+      grid.innerHTML = generatedRecipes.map((recipe, index) => `
+        <div class="rounded-2xl p-5 border flex flex-col justify-between transition-all hover:shadow-md animate-fadeIn ${
+          isAstro 
+            ? 'bg-slate-900/90 border-indigo-800/60 hover:border-amber-500/50' 
+            : 'bg-white border-stone-200 hover:border-amber-600/40'
+        }">
+          <div class="space-y-3.5">
+            <!-- カードヘッダー -->
+            <div class="flex items-start justify-between gap-3">
+              <div class="space-y-1">
+                <span class="inline-block text-[11px] font-bold px-2 py-0.5 rounded-md ${
+                  isAstro 
+                    ? 'bg-indigo-950 text-amber-300 border border-indigo-700/50' 
+                    : 'bg-stone-100 text-stone-600'
+                }">
+                  No.${String(index + 1).padStart(2, '0')}
+                </span>
+                <h3 class="text-base sm:text-lg font-bold leading-snug font-serif-jp ${
+                  isAstro ? 'text-amber-100' : 'text-stone-900'
+                }">
+                  ${escapeHtml(recipe.title)}
+                </h3>
+              </div>
+
+              <button
+                onclick="copyRecipe(${index}, this)"
+                class="shrink-0 p-2 rounded-xl border text-xs font-medium flex items-center gap-1 transition-colors ${
+                  isAstro 
+                    ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' 
+                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+                }"
+                title="レシピをコピー"
+              >
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>コピー</span>
+              </button>
+            </div>
+
+            <!-- 象徴・コンセプトバッジ -->
+            <div class="text-xs px-3 py-2 rounded-xl ${
+              isAstro 
+                ? 'bg-gradient-to-r from-indigo-950/90 to-purple-950/90 text-purple-200 border border-purple-800/40' 
+                : 'bg-amber-50/80 text-amber-900 border border-amber-200/60'
+            }">
+              ${isAstro ? '🔮 ' : '✨ '}${escapeHtml(recipe.mysticNote)}
+            </div>
+
+            <!-- 材料リスト -->
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider opacity-70 mb-1.5">主な材料</h4>
+              <div class="flex flex-wrap gap-1.5">
+                ${recipe.ingredients.map(ing => `
+                  <span class="text-xs px-2.5 py-0.5 rounded-md ${
+                    isAstro ? 'bg-slate-800 text-slate-200' : 'bg-stone-100 text-stone-700'
+                  }">
+                    ${escapeHtml(ing)}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- 簡単な作り方 -->
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-wider opacity-70 mb-1">簡単な作り方</h4>
+              <p class="text-sm leading-relaxed ${isAstro ? 'text-slate-300' : 'text-stone-600'}">
+                ${escapeHtml(recipe.steps)}
+              </p>
+            </div>
+          </div>
+
+          <!-- シェフのワンポイント -->
+          <div class="mt-4 pt-3 border-t text-xs flex items-start gap-1.5 ${
+            isAstro ? 'border-slate-800 text-indigo-300' : 'border-stone-100 text-stone-500'
+          }">
+            <span class="font-bold shrink-0">💡 Point:</span>
+            <span>${escapeHtml(recipe.chefTip)}</span>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    // クリップボードへコピー
+    function copyRecipe(index, btnElement) {
+      const recipe = generatedRecipes[index];
+      if (!recipe) return;
+
+      const modeLabel = activeTab === 'astro' ? '【タロット＆占星術フレンチ和惣菜】' : '【フレンチ×和風お惣菜】';
+      let textToCopy = `${modeLabel}\n■ ${recipe.title}\n`;
+      if (recipe.mysticNote) {
+        textToCopy += `★ 象徴・テーマ: ${recipe.mysticNote}\n`;
+      }
+      textToCopy += `\n【主な材料】\n${recipe.ingredients.map(ing => `・${ing}`).join('\n')}\n`;
+      textToCopy += `\n【簡単な作り方】\n${recipe.steps}\n`;
+      textToCopy += `\n【シェフのワンポイント】\n${recipe.chefTip}`;
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalHtml = btnElement.innerHTML;
+        btnElement.className = 'shrink-0 p-2 rounded-xl border text-xs font-medium flex items-center gap-1 transition-colors bg-emerald-600 border-emerald-600 text-white';
+        btnElement.innerHTML = `<i data-lucide="check" class="w-3.5 h-3.5"></i><span>コピー済</span>`;
+        lucide.createIcons();
+
+        setTimeout(() => {
+          const isAstro = activeTab === 'astro';
+          btnElement.className = `shrink-0 p-2 rounded-xl border text-xs font-medium flex items-center gap-1 transition-colors ${
+            isAstro 
+              ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' 
+              : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100'
+          }`;
+          btnElement.innerHTML = originalHtml;
+          lucide.createIcons();
+        }, 2000);
+      });
+    }
+
+    // XSS対策用エスケープ関数
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, match => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[match]));
+    }
+    function escapeAttr(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
