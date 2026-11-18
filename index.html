@@ -49,8 +49,8 @@
         </div>
 
         <!-- APIキー設定ボタン（モバイル表示用） -->
-        <button onclick="toggleApiModal()" id="api-btn-mobile" class="md:hidden p-2 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100 flex items-center gap-1 text-xs">
-          <i data-lucide="key" class="w-4 h-4"></i>
+        <button onclick="toggleApiModal()" id="api-btn-mobile" class="md:hidden px-2.5 py-1.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-100 flex items-center gap-1 text-xs shrink-0 whitespace-nowrap">
+          <i data-lucide="key" class="w-3.5 h-3.5"></i>
           <span>API設定</span>
         </button>
       </div>
@@ -61,23 +61,23 @@
           <button
             onclick="switchTab('standard')"
             id="tab-standard"
-            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-stone-900 shadow-sm"
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-white text-stone-900 shadow-sm whitespace-nowrap"
           >
-            <i data-lucide="utensils" class="w-4 h-4 text-amber-700"></i>
+            <i data-lucide="utensils" class="w-4 h-4 text-amber-700 shrink-0"></i>
             <span>スタンダード和仏惣菜</span>
           </button>
           <button
             onclick="switchTab('astro')"
             id="tab-astro"
-            class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-stone-500 hover:text-stone-800"
+            class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-stone-500 hover:text-stone-800 whitespace-nowrap"
           >
-            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
             <span>タロット＆占星術</span>
           </button>
         </div>
 
         <!-- APIキー設定ボタン（PC表示用） -->
-        <button onclick="toggleApiModal()" id="api-btn-desktop" class="hidden md:flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 text-xs font-medium shadow-sm transition-colors">
+        <button onclick="toggleApiModal()" id="api-btn-desktop" class="hidden md:flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 text-xs font-medium shadow-sm transition-colors shrink-0 whitespace-nowrap">
           <i data-lucide="key" class="w-4 h-4 text-amber-600"></i>
           <span id="api-status-text">APIキー設定</span>
         </button>
@@ -95,15 +95,15 @@
         
         <!-- 左側：材料の入力と履歴 -->
         <div class="space-y-4">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between gap-2">
             <label class="text-sm font-bold flex items-center gap-2">
-              <span id="dot-ingredient" class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
-              家にある材料・買った食材
+              <span id="dot-ingredient" class="w-2.5 h-2.5 rounded-full bg-amber-600 shrink-0"></span>
+              <span>家にある材料・買った食材</span>
             </label>
             <button 
               onclick="clearSelectedIngredients()"
               id="clear-ing-btn"
-              class="text-xs opacity-60 hover:opacity-100 flex items-center gap-1 hidden"
+              class="text-xs opacity-60 hover:opacity-100 flex items-center gap-1 shrink-0 whitespace-nowrap hidden"
             >
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> クリア
             </button>
@@ -114,20 +114,21 @@
             <!-- JSで描画 -->
           </div>
 
-          <!-- 新規材料のテキスト入力 -->
-          <form onsubmit="handleAddIngredient(event)" class="flex gap-2">
+          <!-- 新規材料のテキスト入力（はみ出し防止・Enter対応） -->
+          <form onsubmit="handleAddIngredient(event)" class="relative flex items-center w-full">
             <input
               type="text"
               id="ingredient-input"
-              placeholder="例：里芋、鴨肉、春菊、クリームチーズ..."
-              class="flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-amber-600 transition-colors"
+              enterkeyhint="done"
+              placeholder="例：里芋、鴨肉、春菊...（Enterで追加）"
+              class="w-full pl-3.5 pr-16 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-amber-600 transition-colors"
             />
             <button
               type="submit"
               id="add-ing-btn"
-              class="px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0"
+              class="absolute right-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-0.5 transition-colors bg-stone-800 hover:bg-stone-700 text-white"
             >
-              <i data-lucide="plus" class="w-4 h-4"></i> 追加
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> 追加
             </button>
           </form>
 
@@ -144,15 +145,15 @@
 
         <!-- 右側：調理名・料理名の入力と履歴 -->
         <div class="space-y-4">
-          <div class="flex items-center justify-between">
+          <div class="flex items-center justify-between gap-2">
             <label class="text-sm font-bold flex items-center gap-2">
-              <span id="dot-method" class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
-              調理名・作りたい料理のイメージ（任意）
+              <span id="dot-method" class="w-2.5 h-2.5 rounded-full bg-emerald-600 shrink-0"></span>
+              <span>調理名・料理のイメージ（任意）</span>
             </label>
             <button 
               onclick="clearSelectedMethods()"
               id="clear-method-btn"
-              class="text-xs opacity-60 hover:opacity-100 flex items-center gap-1 hidden"
+              class="text-xs opacity-60 hover:opacity-100 flex items-center gap-1 shrink-0 whitespace-nowrap hidden"
             >
               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> クリア
             </button>
@@ -163,20 +164,21 @@
             <!-- JSで描画 -->
           </div>
 
-          <!-- 新規調理法のテキスト入力 -->
-          <form onsubmit="handleAddMethod(event)" class="flex gap-2">
+          <!-- 新規調理法のテキスト入力（はみ出し防止・Enter対応） -->
+          <form onsubmit="handleAddMethod(event)" class="relative flex items-center w-full">
             <input
               type="text"
               id="method-input"
-              placeholder="例：リエット、キッシュ、南蛮漬け、白和え..."
-              class="flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-emerald-600 transition-colors"
+              enterkeyhint="done"
+              placeholder="例：リエット、キッシュ...（Enterで追加）"
+              class="w-full pl-3.5 pr-16 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-emerald-600 transition-colors"
             />
             <button
               type="submit"
               id="add-method-btn"
-              class="px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0"
+              class="absolute right-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-0.5 transition-colors bg-stone-800 hover:bg-stone-700 text-white"
             >
-              <i data-lucide="plus" class="w-4 h-4"></i> 追加
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> 追加
             </button>
           </form>
 
@@ -345,8 +347,8 @@
         headerSub.className = 'text-xs text-indigo-300 transition-colors';
         tabContainer.className = 'flex p-1 rounded-xl border bg-slate-950 border-indigo-800/60 transition-colors w-full sm:w-auto';
         
-        tabStd.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-slate-400 hover:text-slate-200';
-        tabAst.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-gradient-to-r from-indigo-600 to-purple-700 text-amber-100 shadow-md';
+        tabStd.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-slate-400 hover:text-slate-200 whitespace-nowrap';
+        tabAst.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-gradient-to-r from-indigo-600 to-purple-700 text-amber-100 shadow-md whitespace-nowrap';
         
         inputPanel.className = 'rounded-2xl p-5 sm:p-7 border shadow-sm transition-colors duration-500 bg-slate-900/70 border-indigo-800/50 shadow-indigo-950/50';
         modeDesc.textContent = '✨ タロットのアルカナや天体の配置（アスペクト）からインスピレーションを得た10皿を紡ぎます';
@@ -358,8 +360,8 @@
         headerSub.className = 'text-xs text-stone-500 transition-colors';
         tabContainer.className = 'flex p-1 rounded-xl border bg-stone-100 border-stone-200 transition-colors w-full sm:w-auto';
         
-        tabStd.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all bg-white text-stone-900 shadow-sm';
-        tabAst.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all text-stone-500 hover:text-stone-800';
+        tabStd.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all bg-white text-stone-900 shadow-sm whitespace-nowrap';
+        tabAst.className = 'flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-stone-500 hover:text-stone-800 whitespace-nowrap';
         
         inputPanel.className = 'rounded-2xl p-5 sm:p-7 border shadow-sm transition-colors duration-500 bg-white border-stone-200';
         modeDesc.textContent = '🇫🇷🇯🇵 フレンチの技法と和の調味料が織りなす、お惣菜向けレシピを10個提案します';
@@ -387,17 +389,17 @@
       if (isAstro) {
         ingBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-slate-950/80 border-indigo-800/60 transition-colors';
         metBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-slate-950/80 border-indigo-800/60 transition-colors';
-        ingInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-slate-950 border-indigo-800 text-white placeholder-slate-500 focus:ring-indigo-500 transition-colors';
-        metInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-slate-950 border-indigo-800 text-white placeholder-slate-500 focus:ring-purple-500 transition-colors';
-        addIngBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-indigo-600 hover:bg-indigo-500 text-white shrink-0';
-        addMetBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-purple-600 hover:bg-purple-500 text-white shrink-0';
+        ingInp.className = 'w-full pl-3.5 pr-16 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-slate-950 border-indigo-800 text-white placeholder-slate-500 focus:ring-indigo-500 transition-colors';
+        metInp.className = 'w-full pl-3.5 pr-16 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-slate-950 border-indigo-800 text-white placeholder-slate-500 focus:ring-purple-500 transition-colors';
+        addIngBtn.className = 'absolute right-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-0.5 transition-colors bg-indigo-600 hover:bg-indigo-500 text-white';
+        addMetBtn.className = 'absolute right-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-0.5 transition-colors bg-purple-600 hover:bg-purple-500 text-white';
       } else {
         ingBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-stone-50 border-stone-200 transition-colors';
         metBox.className = 'min-h-[54px] p-2.5 rounded-xl border flex flex-wrap gap-2 items-center bg-stone-50 border-stone-200 transition-colors';
-        ingInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-amber-600 transition-colors';
-        metInp.className = 'flex-1 px-3.5 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-emerald-600 transition-colors';
-        addIngBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0';
-        addMetBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-medium flex items-center gap-1 transition-colors bg-stone-800 hover:bg-stone-700 text-white shrink-0';
+        ingInp.className = 'w-full pl-3.5 pr-16 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-amber-600 transition-colors';
+        metInp.className = 'w-full pl-3.5 pr-16 py-2.5 rounded-xl text-sm border focus:outline-none focus:ring-2 bg-white border-stone-300 text-stone-800 placeholder-stone-400 focus:ring-emerald-600 transition-colors';
+        addIngBtn.className = 'absolute right-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-0.5 transition-colors bg-stone-800 hover:bg-stone-700 text-white';
+        addMetBtn.className = 'absolute right-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-0.5 transition-colors bg-stone-800 hover:bg-stone-700 text-white';
       }
     }
 
@@ -614,7 +616,7 @@
 ネーミングは「愚者のタルト」「生ハムとフルーツのコンジャンクション」「月と白味噌のポタージュ」「女帝の無花果テリーヌ」のように、占い好きやお客様がワクワクする詩的で魅力的なものにしてください。`
         : `あなたは将来「フランス料理と和風を合わせたお惣菜（フレンチ和惣菜）のお店」を開くために研究中の情熱的な料理人です。
 ユーザーから与えられた「材料」や「調理名・料理名」をベースに、家庭でも作れて、かつお惣菜屋さんのショーケースに並んだら思わず買いたくなるような、おしゃれで美味しい「フレンチ×和風」の創作お惣菜レシピを【必ず10個】提案してください。
-出汁、味噌、醤油、柚子、みりんなどの和の要素と、バター、生クリーム、ハーブ、ワイン、フレンチの調理技法（コンフィ、テリーヌ、マリネ、ポワレ、デグラセ、セジール、スエなど）をバランスよく組み合わせてください。`;
+出汁、味噌、醤油、柚子、みりんなどの和の要素と、バター、生クリーム、ハーブ、ワイン、フレンチの調理技法（コンフィ、テリーヌ、マリネ、ポワレなど）をバランスよく組み合わせてください。`;
 
       const userQuery = `
 【使いたい材料】: ${selectedIngredients.length > 0 ? selectedIngredients.join('、') : 'おまかせ（季節の食材など）'}
